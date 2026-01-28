@@ -1,24 +1,37 @@
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
-public class CardSlot : MonoBehaviour
+public abstract class CardSlot : MonoBehaviour
 {
     [SerializeField] private int _maxCardsInSlot;
 
     protected Stack<Card> _cards = new();
     protected bool _isFull = false;
 
-    public bool IsFull => _isFull;
-
-    public void AddCard(Card card)
+    public bool TryAddCard(Card card)
     {
+        if (_isFull || !CanAddCard(card))
+        {
+            return false;
+        }
+
         _cards.Push(card);
+
+        card.transform.SetParent(transform, false);
+        card.transform.localPosition = Vector3.zero;
+
+        card.OnRemoveCardEvent += OnRemoveCard;
+
         if (_cards.Count == _maxCardsInSlot)
         {
             _isFull = true;
         }
-        card.transform.SetParent(transform, false);
+
+        return true;
     }
+
+    protected abstract bool CanAddCard(Card card);
 
     public void DrawLastCards(int cardCount)
     {
@@ -33,5 +46,16 @@ public class CardSlot : MonoBehaviour
         if (_cards.Count == 0)
             return;
         _cards.Pop();
+    }
+
+    private void OnRemoveCard(Card cardToRemove)
+    {
+        _cards.Pop();
+        cardToRemove.OnRemoveCardEvent -= OnRemoveCard;
+    }
+
+    public Card GetLastCard()
+    {
+            return _cards.Peek();
     }
 }

@@ -4,24 +4,22 @@ using UnityEngine;
 
 public class Stock : CardSlot
 {
-    [SerializeField] private Card _cardPrefab;
-
-    public Stack<Card> Init(List<CardDatas> cardDatas)
+    public Stack<Card> Init(List<CardDatas> cardDatas, Card cardPrefab, Transform dragParent)
     {
-        InstantiateCards(cardDatas);
+        InstantiateCards(cardDatas, cardPrefab, dragParent);
         Shuffle();
         return _cards;
     }
 
-    private void InstantiateCards(List<CardDatas> cardDatas)
+    private void InstantiateCards(List<CardDatas> cardDatas, Card cardPrefab, Transform dragParent)
     {
         foreach (CardDatas cardData in cardDatas)
         {
-            Card card = Instantiate(_cardPrefab);
-            card.Init(cardData);
-            if (!_isFull)
+            Card card = Instantiate(cardPrefab);
+            card.Init(cardData, dragParent);
+            if(TryAddCard(card))
             {
-                AddCard(card);
+                card.Flip(false);
             }
         }
     }
@@ -42,5 +40,10 @@ public class Stock : CardSlot
         {
             _cards.Push(card);
         }
+    }
+
+    protected override bool CanAddCard(Card card)
+    {
+        return true;
     }
 }

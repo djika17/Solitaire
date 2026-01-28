@@ -5,6 +5,8 @@ public class CardsManager : MonoBehaviour
 {
     [Header("Datas")]
     [SerializeField] private List<CardDatas> _cardDatas = new();
+    [SerializeField] private Card _cardPrefab;
+    [SerializeField] private Transform _dragParent;
 
     [Header("Holders")]
     [SerializeField] private Foundations _foundations;
@@ -13,7 +15,7 @@ public class CardsManager : MonoBehaviour
 
     public void Init()
     {
-        Stack<Card> shuffleCards = _deck.Init(_cardDatas);
-        _board.Init(shuffleCards);
+        Stack<Card> shuffledCards = _deck.Init(_cardDatas, _cardPrefab, _dragParent);
+        _board.Init(shuffledCards);
     }
 }

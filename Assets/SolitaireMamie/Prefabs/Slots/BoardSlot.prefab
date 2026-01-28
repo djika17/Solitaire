@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &6341909409366412401
+--- !u!1 &1836416151689750484
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,22 +8,22 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 7654778833801091679}
-  - component: {fileID: 3008854762967434682}
+  - component: {fileID: 6700057674921733331}
+  - component: {fileID: 5014396431608951982}
   m_Layer: 5
-  m_Name: Stock
+  m_Name: BoardSlot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!224 &7654778833801091679
+--- !u!224 &6700057674921733331
 RectTransform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6341909409366412401}
+  m_GameObject: {fileID: 1836416151689750484}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -34,19 +34,18 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 133.44, y: 209.28}
+  m_SizeDelta: {x: 133.44, y: 209.28003}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &3008854762967434682
+--- !u!114 &5014396431608951982
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6341909409366412401}
+  m_GameObject: {fileID: 1836416151689750484}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3d1a3778f6416f4429e46caa888b2bad, type: 3}
+  m_Script: {fileID: 11500000, guid: 17fb815efe0a9db41a53e3c56096cfc0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _maxCardsInSlot: 52
-  _cardPrefab: {fileID: 6279633043638537337, guid: 8d9a3a7d0cde3594ab066c73930b5205, type: 3}
+  _maxCardsInSlot: 1

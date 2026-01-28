@@ -1,5 +1,40 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &3179180974033236371
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8966249012405642976}
+  m_Layer: 5
+  m_Name: DragParent
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &8966249012405642976
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3179180974033236371}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5512596520272011226}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &4204006033213182979
 GameObject:
   m_ObjectHideFlags: 0
@@ -32,6 +67,7 @@ RectTransform:
   - {fileID: 2610898722373478258}
   - {fileID: 431287865325107785}
   - {fileID: 5485637556270309730}
+  - {fileID: 8966249012405642976}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -104,6 +140,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: bf9bbddb57d87894f9e5ec787acc41fa, type: 2}
   - {fileID: 11400000, guid: b6da733f4f04dfd4d986068521a60ca2, type: 2}
   - {fileID: 11400000, guid: ed5229ca9d19ebe4f8ec1bd943d169f3, type: 2}
+  _cardPrefab: {fileID: 6279633043638537337, guid: 8d9a3a7d0cde3594ab066c73930b5205, type: 3}
+  _dragParent: {fileID: 8966249012405642976}
   _foundations: {fileID: 1509448250723338574}
   _deck: {fileID: 4278552785115486470}
   _board: {fileID: 7322673878866310686}

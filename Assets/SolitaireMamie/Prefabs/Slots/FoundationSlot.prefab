@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 9042446012109635683}
   - component: {fileID: 4526185609382955195}
   - component: {fileID: 3345602287742601336}
-  - component: {fileID: 5663965822665095350}
+  - component: {fileID: 1377937629513668396}
   m_Layer: 5
   m_Name: FoundationSlot
   m_TagString: Untagged
@@ -76,7 +76,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &5663965822665095350
+--- !u!114 &1377937629513668396
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -85,7 +85,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 7956902771526580114}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bf8371a9cb671f04cb0960cb7562c1c3, type: 3}
+  m_Script: {fileID: 11500000, guid: bda9f8562c56f324f8a1b52ae986f823, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _maxCardsInSlot: 13
+  _suit: 0
