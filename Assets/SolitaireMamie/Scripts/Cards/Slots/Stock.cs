@@ -6,12 +6,11 @@ public class Stock : CardSlot
 {
     [SerializeField] private Card _cardPrefab;
 
-    public event Action<Stack<Card>> OnStockShuffleEndEvent;
-
-    public void Init(List<CardDatas> cardDatas)
+    public Stack<Card> Init(List<CardDatas> cardDatas)
     {
         InstantiateCards(cardDatas);
         Shuffle();
+        return _cards;
     }
 
     private void InstantiateCards(List<CardDatas> cardDatas)
@@ -43,7 +42,5 @@ public class Stock : CardSlot
         {
             _cards.Push(card);
         }
-
-        OnStockShuffleEndEvent?.Invoke(_cards);
     }
 }

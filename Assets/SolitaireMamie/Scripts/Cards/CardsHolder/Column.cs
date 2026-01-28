@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEngine.Rendering.GPUSort;
 
 public class Column : MonoBehaviour
 {
@@ -9,7 +8,7 @@ public class Column : MonoBehaviour
 
     private int _cardsCount;
 
-    public int FillColumn(Stack<Card> cards)
+    public void FillColumn(Stack<Card> cards)
     {
         Card cardToAdd = null;
         while (!IsFull() && cards.Count != 0)
@@ -22,8 +21,6 @@ public class Column : MonoBehaviour
         {
             cardToAdd.Flip();
         }
-
-        return _cardsCount;
     }
 
     private bool IsFull()
