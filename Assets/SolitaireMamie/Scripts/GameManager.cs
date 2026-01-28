@@ -4,39 +4,11 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    [Header("General")]
-    [SerializeField] private List<CardDatas> _cardDatas = new();
-    [SerializeField] private RectTransform _stock;
-    [SerializeField] private Card _cardPrefab;
-
-    [Header("Columns")]
-    [SerializeField] private List<Column> _columns = new();
-
+    [Header("Cards")]
+    [SerializeField] private CardsManager _cardsManager;
 
     private void Start()
     {
-        InstantiateCards();
-        DealCards();
+        _cardsManager.Init();
     }
-
-    private void InstantiateCards()
-    {
-        foreach (CardDatas cardDatas in _cardDatas)
-        {
-            Card card = Instantiate(_cardPrefab, _stock);
-            card.Init(cardDatas);
-        }
-    }
-
-    private void DealCards()
-    {
-        foreach(Column col in _columns)
-        {
-            while (!col.IsFull)
-            {
-                //AddCard
-            }
-        }
-    }
-
 }

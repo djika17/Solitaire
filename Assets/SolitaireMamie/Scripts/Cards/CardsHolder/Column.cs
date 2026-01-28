@@ -1,0 +1,43 @@
+using System.Collections.Generic;
+using UnityEngine;
+using static UnityEngine.Rendering.GPUSort;
+
+public class Column : MonoBehaviour
+{
+    [SerializeField, Range(1, 7)] private int _startCardCount;
+    [SerializeField] private List<CardSlot> _boardSlots = new();
+
+    private int _cardsCount;
+
+    public int FillColumn(Stack<Card> cards)
+    {
+        Card cardToAdd = null;
+        while (!IsFull() && cards.Count != 0)
+        {
+            cardToAdd = cards.Pop();
+            AddCard(cardToAdd);
+        }
+
+        if (cardToAdd != null)
+        {
+            cardToAdd.Flip();
+        }
+
+        return _cardsCount;
+    }
+
+    private bool IsFull()
+    {
+        return _cardsCount >= _startCardCount;
+    }
+
+    private void AddCard(Card card)
+    {
+        if(_cardsCount <= _boardSlots.Count)
+        {
+            CardSlot nextSlot = _boardSlots[_cardsCount];
+            nextSlot.AddCard(card);
+            _cardsCount++;
+        }
+    }
+}
