@@ -7,8 +7,8 @@ public class Deck : MonoBehaviour
     [SerializeField] private Stock _stock;
     [SerializeField] private CardSlot _waste;
 
-    public Stack<Card> Init(List<CardDatas> cardDatas, Card cardPrefab, Transform dragParent)
+    public Stack<Card> Init(List<CardDatas> cardDatas, Card cardPrefab, Column dragColumn)
     {
-        return _stock.Init(cardDatas, cardPrefab, dragParent);
+        return _stock.Init(cardDatas, cardPrefab, dragColumn);
     }
 }

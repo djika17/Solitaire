@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 7794723319224648248}
   - component: {fileID: 7823942740583628762}
   - component: {fileID: 4324821412061714579}
-  - component: {fileID: 8268309670039639142}
-  - component: {fileID: 7838842470028710927}
+  - component: {fileID: 281648718440493816}
+  - component: {fileID: 2366880859867236255}
   m_Layer: 5
   m_Name: Column
   m_TagString: Untagged
@@ -90,6 +90,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3979dbc94590046409a9b64e54018029, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _isBoardColumn: 1
   _startCardCount: 1
   _boardSlots:
   - {fileID: 8381623087163122130}
@@ -105,7 +106,7 @@ MonoBehaviour:
   - {fileID: 6166765131602707392}
   - {fileID: 7352649555881581954}
   - {fileID: 6623051868637043553}
---- !u!222 &8268309670039639142
+--- !u!222 &281648718440493816
 CanvasRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -113,7 +114,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2071236471682005000}
   m_CullTransparentMesh: 1
---- !u!114 &7838842470028710927
+--- !u!114 &2366880859867236255
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

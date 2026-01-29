@@ -1,7 +1,7 @@
+using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public abstract class CardSlot : MonoBehaviour
@@ -12,6 +12,11 @@ public abstract class CardSlot : MonoBehaviour
     protected Stack<Card> _cards = new();
     protected bool _isFull = false;
 
+    public bool IsFull => _isFull;
+
+    public Action<CardSlot> OnCardInSlotBeginDragEvent;
+    public Action<CardSlot, PointerEventData> OnCardInSlotEndDragEvent;
+
     private void Start()
     {
         Card.OnBeginDragEvent += OnBeginDrag;
@@ -20,7 +25,7 @@ public abstract class CardSlot : MonoBehaviour
 
     protected abstract bool CanAddCard(Card card);
 
-    public bool TryAddCard(Card card, bool addCard = true)
+    public bool TryAddCard(Card card, bool addCard = true, bool addPreDragSlot = true)
     {
         if (!CanAddCard(card))
         {
@@ -29,13 +34,23 @@ public abstract class CardSlot : MonoBehaviour
 
         if (addCard)
         {
-            AddCard(card);
+            AddCard(card, addPreDragSlot);
         }
 
         return true;
     }
 
-    private void AddCard(Card card)
+    public void StartDragCard()
+    {
+        _cards.Peek().StartDrag();
+    }
+
+    public void EndDragCard(PointerEventData eventData)
+    {
+        _cards.Peek().EndDrag(eventData);
+    }
+
+    private void AddCard(Card card, bool addPreDragSlot)
     {
         _cards.Push(card);
 
@@ -43,17 +58,31 @@ public abstract class CardSlot : MonoBehaviour
         card.transform.localPosition = Vector3.zero;
 
         card.OnRemoveCardEvent += OnRemoveCard;
+        card.OnBeginDragCardEvent += OnCardBeginDrag;
+        card.OnEndDragCardEvent += OnCardEndDrag;
 
         if (_cards.Count == _maxCardsInSlot)
         {
             _isFull = true;
+        }
+
+        if (addPreDragSlot)
+        {
+            card.PreDragSlot = this;
+            if(!(this as BoardSlot))
+            {
+                card.PreDragColumn = null;
+            }
         }
     }
 
     protected virtual void OnRemoveCard(Card cardToRemove)
     {
         _cards.Pop();
+        _isFull = false;
         cardToRemove.OnRemoveCardEvent -= OnRemoveCard;
+        cardToRemove.OnBeginDragCardEvent -= OnCardBeginDrag;
+        cardToRemove.OnEndDragCardEvent -= OnCardEndDrag;
     }
 
     public Card GetLastCard()
@@ -61,13 +90,37 @@ public abstract class CardSlot : MonoBehaviour
         return _cards.Peek();
     }
 
+    public void TryFlip()
+    {
+        if (!_cards.Peek().IsVisible)
+        {
+            _cards.Peek().Flip(true);
+        }
+    }
+
     private void OnBeginDrag()
     {
-        _image.raycastTarget = true;
+        if(_image != null)
+        {
+            _image.raycastTarget = true;
+        }
     }
 
     private void OnEndDrag()
     {
-        _image.raycastTarget = false;
+        if (_image != null)
+        {
+            _image.raycastTarget = false;
+        }
+    }
+
+    private void OnCardBeginDrag()
+    {
+        OnCardInSlotBeginDragEvent?.Invoke(this);
+    }
+
+    private void OnCardEndDrag(PointerEventData eventData)
+    {
+        OnCardInSlotEndDragEvent?.Invoke(this, eventData);
     }
 }

@@ -11,22 +11,29 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
     private CardDatas _datas;
     private bool _isVisible;
 
-    private Transform _currentParent;
-    private Transform _dragParent;
+    private Column _preDragColumn;
+    private CardSlot _preDragSlot;
+
+    private Column _dragColumn;
 
     public CardDatas Datas => _datas;
     public bool IsVisible => _isVisible;
 
+    public Column PreDragColumn{ get => _preDragColumn;  set => _preDragColumn = value; }
+    public CardSlot PreDragSlot { set => _preDragSlot = value; }
+
     public Action<Card> OnRemoveCardEvent;
+    public Action OnBeginDragCardEvent;
+    public Action<PointerEventData> OnEndDragCardEvent;
 
     public static Action OnBeginDragEvent;
     public static Action OnEndDragEvent;
 
-    public void Init(CardDatas m_datas, Transform dragParent)
+    public void Init(CardDatas m_datas, Column dragColumn)
     {
         _datas = m_datas;
         name = m_datas.name;
-        _dragParent = dragParent;
+        _dragColumn = dragColumn;
         UpdateSprite();
     }
 
@@ -53,9 +60,8 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
         {
             return;
         }
-        _currentParent = transform.parent;
-        transform.SetParent(_dragParent, false);
         OnBeginDragEvent?.Invoke();
+        OnBeginDragCardEvent?.Invoke();
     }
 
     public void OnDrag(PointerEventData eventData)
@@ -65,7 +71,7 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
             return;
         }
 
-        transform.position = eventData.position;
+        _dragColumn.transform.position = eventData.position;
     }
 
     public void OnEndDrag(PointerEventData eventData)
@@ -74,7 +80,17 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
         {
             return;
         }
+        OnEndDragCardEvent?.Invoke(eventData);
+    }
 
+    public void StartDrag()
+    {
+        OnRemoveCardEvent?.Invoke(this);
+        _dragColumn.TryAddCard(this);
+    }
+
+    public void EndDrag(PointerEventData eventData)
+    {
         List<RaycastResult> results = new List<RaycastResult>();
         EventSystem.current.RaycastAll(eventData, results);
 
@@ -90,7 +106,7 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
             if (firstColumn == null)
             {
                 Column column = r.gameObject.GetComponent<Column>();
-                if (column != null)
+                if (column != null && column.IsBoardColumn)
                 {
                     firstColumn = column;
                 }
@@ -108,15 +124,15 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
             firstSlot = hitSlots[0];
         }
 
-        CardSlot nextFreeSlot = null;
         if (firstColumn != null)
         {
-            nextFreeSlot = firstColumn.GetNextFreeSlot();
-            if (hitSlots.Contains(firstColumn?.GetNextFreeSlot()))
+            CardSlot nextFreeSlot = firstColumn.GetNextFreeSlot();
+            if (hitSlots.Contains(nextFreeSlot))
             {
                 if (firstColumn.TryAddCard(this, false))
                 {
                     OnRemoveCardEvent?.Invoke(this);
+                    //_preDragColumn?.TryFlipLast();
                     firstColumn.TryAddCard(this);
                     return;
                 }
@@ -127,12 +143,29 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
             if (firstSlot.TryAddCard(this, false))
             {
                 OnRemoveCardEvent?.Invoke(this);
+                //_preDragColumn?.TryFlipLast();
                 firstSlot.TryAddCard(this);
                 return;
             }
         }
 
-        transform.SetParent(_currentParent, false);
-        transform.localPosition = Vector3.zero;
+        if (_preDragColumn != null)
+        {
+            if(_preDragColumn.TryAddCard(this, false))
+            {
+                OnRemoveCardEvent?.Invoke(this);
+                _preDragColumn.TryAddCard(this);
+                return;
+            }
+        }
+        else
+        {
+            if(_preDragSlot.TryAddCard(this, false))
+            {
+                OnRemoveCardEvent?.Invoke(this);
+                _preDragSlot.TryAddCard(this);
+                return;
+            }
+        }
     }
 }

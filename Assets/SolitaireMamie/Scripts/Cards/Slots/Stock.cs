@@ -4,19 +4,21 @@ using UnityEngine;
 
 public class Stock : CardSlot
 {
-    public Stack<Card> Init(List<CardDatas> cardDatas, Card cardPrefab, Transform dragParent)
+    private bool _isShuffleOver;
+
+    public Stack<Card> Init(List<CardDatas> cardDatas, Card cardPrefab, Column dragColumn)
     {
-        InstantiateCards(cardDatas, cardPrefab, dragParent);
+        InstantiateCards(cardDatas, cardPrefab, dragColumn);
         Shuffle();
         return _cards;
     }
 
-    private void InstantiateCards(List<CardDatas> cardDatas, Card cardPrefab, Transform dragParent)
+    private void InstantiateCards(List<CardDatas> cardDatas, Card cardPrefab, Column dragColumn)
     {
         foreach (CardDatas cardData in cardDatas)
         {
             Card card = Instantiate(cardPrefab);
-            card.Init(cardData, dragParent);
+            card.Init(cardData, dragColumn);
             if(TryAddCard(card))
             {
                 card.Flip(false);
@@ -40,10 +42,11 @@ public class Stock : CardSlot
         {
             _cards.Push(card);
         }
+        _isShuffleOver = true;
     }
 
     protected override bool CanAddCard(Card card)
     {
-        return !_isFull;
+        return (!_isFull && !_isShuffleOver);
     }
 }
