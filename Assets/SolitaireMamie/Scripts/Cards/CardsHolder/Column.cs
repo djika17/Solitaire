@@ -8,6 +8,14 @@ public class Column : MonoBehaviour
 
     private int _cardsCount;
 
+    private void Start()
+    {
+        foreach (BoardSlot slot in _boardSlots) 
+        {
+            slot.OnEmptyBoardSlotEvent += OnEmptyBoardSlot;
+        }
+    }
+
     public void FillColumn(Stack<Card> cards)
     {
         Card cardToAdd = null;
@@ -23,12 +31,17 @@ public class Column : MonoBehaviour
         }
     }
 
+    public CardSlot GetNextFreeSlot()
+    {
+        return _boardSlots[_cardsCount];
+    }
+
     private bool IsFull()
     {
         return _cardsCount >= _startCardCount;
     }
 
-    public bool TryAddCard(Card card)
+    public bool TryAddCard(Card card, bool addCard = true)
     {
         if (_cardsCount > _boardSlots.Count)
         {
@@ -37,7 +50,7 @@ public class Column : MonoBehaviour
 
         if (!card.IsVisible)
         {
-            return TryAddCardToSlot(card);
+            return TryAddCardToSlot(card, addCard);
         }
 
         CardDatas cardDatas = card.Datas;
@@ -46,7 +59,7 @@ public class Column : MonoBehaviour
         {
             if (cardDatas.Value == 13)
             {
-                return TryAddCardToSlot(card);
+                return TryAddCardToSlot(card, addCard);
             }
         }
 
@@ -63,21 +76,37 @@ public class Column : MonoBehaviour
 
             if (cardDatas.Value == targetValue && cardDatas.Color == targetColor) 
             {
-                return TryAddCardToSlot(card);
+                return TryAddCardToSlot(card, addCard);
             }
         }
 
         return false;
     }
 
-    private bool TryAddCardToSlot(Card card)
+    private bool TryAddCardToSlot(Card card, bool addCard = true)
     {
-        CardSlot nextSlot = _boardSlots[_cardsCount];
-        if (nextSlot.TryAddCard(card))
+        CardSlot nextSlot = GetNextFreeSlot();
+        if (nextSlot.TryAddCard(card, addCard))
         {
-            _cardsCount++;
+            if (addCard)
+            {
+                _cardsCount++;
+            }
             return true;
         }
         return false;
+    }
+
+    private void OnEmptyBoardSlot()
+    {
+        _cardsCount--;
+    }
+
+    private void OnDisable()
+    {
+        foreach (BoardSlot slot in _boardSlots) 
+        {
+            slot.OnEmptyBoardSlotEvent -= OnEmptyBoardSlot;
+        }
     }
 }

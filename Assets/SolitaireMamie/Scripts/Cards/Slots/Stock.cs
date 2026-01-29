@@ -44,6 +44,6 @@ public class Stock : CardSlot
 
     protected override bool CanAddCard(Card card)
     {
-        return true;
+        return !_isFull;
     }
 }

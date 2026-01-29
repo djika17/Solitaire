@@ -19,6 +19,9 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
 
     public Action<Card> OnRemoveCardEvent;
 
+    public static Action OnBeginDragEvent;
+    public static Action OnEndDragEvent;
+
     public void Init(CardDatas m_datas, Transform dragParent)
     {
         _datas = m_datas;
@@ -52,11 +55,12 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
         }
         _currentParent = transform.parent;
         transform.SetParent(_dragParent, false);
+        OnBeginDragEvent?.Invoke();
     }
 
     public void OnDrag(PointerEventData eventData)
     {
-        if (!_isVisible) 
+        if (!_isVisible)
         {
             return;
         }
@@ -74,37 +78,61 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
         List<RaycastResult> results = new List<RaycastResult>();
         EventSystem.current.RaycastAll(eventData, results);
 
+        OnEndDragEvent?.Invoke();
+
         Column firstColumn = null;
         CardSlot firstSlot = null;
+
+        List<CardSlot> hitSlots = new List<CardSlot>();
 
         foreach (RaycastResult r in results)
         {
             if (firstColumn == null)
             {
-                firstColumn = r.gameObject.GetComponent<Column>();
+                Column column = r.gameObject.GetComponent<Column>();
+                if (column != null)
+                {
+                    firstColumn = column;
+                }
             }
 
-            if (firstSlot == null)
+            CardSlot slot = r.gameObject.GetComponent<CardSlot>();
+            if (slot != null)
             {
-                firstSlot = r.gameObject.GetComponent<CardSlot>();
+                hitSlots.Add(slot);
             }
-
-            if (firstColumn != null && firstSlot != null)
-                break;
         }
 
-        if (firstColumn != null && firstColumn.TryAddCard(this))
+        if (hitSlots.Count != 0)
         {
-            OnRemoveCardEvent?.Invoke(this);
+            firstSlot = hitSlots[0];
         }
-        else if (firstSlot != null && firstSlot.TryAddCard(this))
+
+        CardSlot nextFreeSlot = null;
+        if (firstColumn != null)
         {
-            OnRemoveCardEvent?.Invoke(this);
+            nextFreeSlot = firstColumn.GetNextFreeSlot();
+            if (hitSlots.Contains(firstColumn?.GetNextFreeSlot()))
+            {
+                if (firstColumn.TryAddCard(this, false))
+                {
+                    OnRemoveCardEvent?.Invoke(this);
+                    firstColumn.TryAddCard(this);
+                    return;
+                }
+            }
         }
-        else
+        else if (firstSlot != null)
         {
-            transform.SetParent(_currentParent, false);
-            transform.localPosition = Vector3.zero;
+            if (firstSlot.TryAddCard(this, false))
+            {
+                OnRemoveCardEvent?.Invoke(this);
+                firstSlot.TryAddCard(this);
+                return;
+            }
         }
+
+        transform.SetParent(_currentParent, false);
+        transform.localPosition = Vector3.zero;
     }
 }

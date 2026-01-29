@@ -1,21 +1,42 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 public abstract class CardSlot : MonoBehaviour
 {
     [SerializeField] private int _maxCardsInSlot;
+    [SerializeField] private Image _image;
 
     protected Stack<Card> _cards = new();
     protected bool _isFull = false;
 
-    public bool TryAddCard(Card card)
+    private void Start()
     {
-        if (_isFull || !CanAddCard(card))
+        Card.OnBeginDragEvent += OnBeginDrag;
+        Card.OnEndDragEvent += OnEndDrag;
+    }
+
+    protected abstract bool CanAddCard(Card card);
+
+    public bool TryAddCard(Card card, bool addCard = true)
+    {
+        if (!CanAddCard(card))
         {
             return false;
         }
 
+        if (addCard)
+        {
+            AddCard(card);
+        }
+
+        return true;
+    }
+
+    private void AddCard(Card card)
+    {
         _cards.Push(card);
 
         card.transform.SetParent(transform, false);
@@ -27,28 +48,9 @@ public abstract class CardSlot : MonoBehaviour
         {
             _isFull = true;
         }
-
-        return true;
     }
 
-    protected abstract bool CanAddCard(Card card);
-
-    public void DrawLastCards(int cardCount)
-    {
-        for (int i = 0; i <= cardCount; i++)
-        {
-            DrawLastCard();
-        }
-    }
-
-    public void DrawLastCard()
-    {
-        if (_cards.Count == 0)
-            return;
-        _cards.Pop();
-    }
-
-    private void OnRemoveCard(Card cardToRemove)
+    protected virtual void OnRemoveCard(Card cardToRemove)
     {
         _cards.Pop();
         cardToRemove.OnRemoveCardEvent -= OnRemoveCard;
@@ -56,6 +58,16 @@ public abstract class CardSlot : MonoBehaviour
 
     public Card GetLastCard()
     {
-            return _cards.Peek();
+        return _cards.Peek();
+    }
+
+    private void OnBeginDrag()
+    {
+        _image.raycastTarget = true;
+    }
+
+    private void OnEndDrag()
+    {
+        _image.raycastTarget = false;
     }
 }

@@ -6,6 +6,11 @@ public class FoundationSlot : CardSlot
 
     protected override bool CanAddCard(Card card)
     {
+        if(_isFull)
+        {
+            return false;
+        }
+
         CardDatas datas = card.Datas;
         if (_cards.Count == 0) 
         {
