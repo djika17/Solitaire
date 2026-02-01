@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -12,10 +13,12 @@ public abstract class CardSlot : MonoBehaviour
     protected Stack<Card> _cards = new();
     protected bool _isFull = false;
 
+    public Stack<Card> Cards => _cards;
     public bool IsFull => _isFull;
 
     public Action<CardSlot> OnCardInSlotBeginDragEvent;
     public Action<CardSlot, PointerEventData> OnCardInSlotEndDragEvent;
+    public Action OnSlotPointerClickEvent;
 
     private void Start()
     {
@@ -45,9 +48,9 @@ public abstract class CardSlot : MonoBehaviour
         _cards.Peek().StartDrag();
     }
 
-    public void EndDragCard(PointerEventData eventData)
+    public Column EndDragCard(PointerEventData eventData, bool hasMoreThanOneCard)
     {
-        _cards.Peek().EndDrag(eventData);
+        return _cards.Peek().EndDrag(eventData, hasMoreThanOneCard);
     }
 
     private void AddCard(Card card, bool addPreDragSlot)
@@ -60,6 +63,7 @@ public abstract class CardSlot : MonoBehaviour
         card.OnRemoveCardEvent += OnRemoveCard;
         card.OnBeginDragCardEvent += OnCardBeginDrag;
         card.OnEndDragCardEvent += OnCardEndDrag;
+        card.OnPointerClickEvent += OnPointerClick;
 
         if (_cards.Count == _maxCardsInSlot)
         {
@@ -83,10 +87,15 @@ public abstract class CardSlot : MonoBehaviour
         cardToRemove.OnRemoveCardEvent -= OnRemoveCard;
         cardToRemove.OnBeginDragCardEvent -= OnCardBeginDrag;
         cardToRemove.OnEndDragCardEvent -= OnCardEndDrag;
+        cardToRemove.OnPointerClickEvent -= OnPointerClick;
     }
 
     public Card GetLastCard()
     {
+        if(_cards.Count == 0)
+        {
+            Debug.Log("stack empty sur slot" + transform.parent.name + " " + gameObject.name);
+        }
         return _cards.Peek();
     }
 
@@ -116,11 +125,25 @@ public abstract class CardSlot : MonoBehaviour
 
     private void OnCardBeginDrag()
     {
-        OnCardInSlotBeginDragEvent?.Invoke(this);
+        if(this as BoardSlot)
+        {
+            OnCardInSlotBeginDragEvent?.Invoke(this);
+        }
+        else
+        {
+            StartDragCard();
+        }
+        
     }
 
     private void OnCardEndDrag(PointerEventData eventData)
     {
         OnCardInSlotEndDragEvent?.Invoke(this, eventData);
     }
+
+    private void OnPointerClick()
+    {
+        OnSlotPointerClickEvent?.Invoke();
+    }
+
 }

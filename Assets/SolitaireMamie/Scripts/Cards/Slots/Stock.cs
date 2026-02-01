@@ -49,4 +49,5 @@ public class Stock : CardSlot
     {
         return (!_isFull && !_isShuffleOver);
     }
+
 }

@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 public class Column : MonoBehaviour
 {
     [SerializeField] private bool _isBoardColumn;
-    [SerializeField, Range(1, 7)] private int _startCardCount;
+    [SerializeField, Range(1, 20)] private int _startCardCount;
     [SerializeField] private List<BoardSlot> _boardSlots = new();
 
     private int _cardsCount;
@@ -30,7 +30,6 @@ public class Column : MonoBehaviour
 
     public void FillColumn(Stack<Card> cards)
     {
-        Debug.Log("FillColumn");
         Card cardToAdd = null;
         while (!IsFull() && cards.Count != 0)
         {
@@ -44,7 +43,7 @@ public class Column : MonoBehaviour
 
         if (cardToAdd != null)
         {
-            cardToAdd.Flip();
+            cardToAdd.Flip(true);
         }
     }
 
@@ -145,7 +144,7 @@ public class Column : MonoBehaviour
     private void OnBeginDragCardInSlot(CardSlot slot)
     {
         int currentIndex = _boardSlots.IndexOf(slot as BoardSlot);
-        while (_boardSlots[currentIndex].IsFull)
+        while (currentIndex < _boardSlots.Count && _boardSlots[currentIndex].IsFull)
         {
             _boardSlots[currentIndex].StartDragCard();
             currentIndex++;
@@ -154,11 +153,18 @@ public class Column : MonoBehaviour
 
     private void OnEndDragCardInSlot(CardSlot slot, PointerEventData eventData)
     {
-        int currentIndex = _boardSlots.IndexOf(slot as BoardSlot);
-        while (_boardSlots[currentIndex].IsFull)
+        Column targetCol = _boardSlots[0].EndDragCard(eventData, _boardSlots[1].IsFull);
+        if (targetCol != null) 
         {
-            _boardSlots[currentIndex].EndDragCard(eventData);
-            currentIndex++;
+            for (int i = 1; i < _boardSlots.Count; i++) 
+            {
+                if(_boardSlots[i].IsFull)
+                {
+                    Card card = _boardSlots[i].Cards.Peek();
+                    card.OnRemoveCardEvent?.Invoke(card);
+                    targetCol.TryAddCard(card);
+                }
+            }
         }
     }
 

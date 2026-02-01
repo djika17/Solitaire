@@ -4,12 +4,15 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
+public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler
 {
     [SerializeField] private Image _image;
 
     private CardDatas _datas;
+
     private bool _isVisible;
+
+    private bool _isDragged;
 
     private Column _preDragColumn;
     private CardSlot _preDragSlot;
@@ -25,6 +28,7 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
     public Action<Card> OnRemoveCardEvent;
     public Action OnBeginDragCardEvent;
     public Action<PointerEventData> OnEndDragCardEvent;
+    public Action OnPointerClickEvent;
 
     public static Action OnBeginDragEvent;
     public static Action OnEndDragEvent;
@@ -34,12 +38,6 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
         _datas = m_datas;
         name = m_datas.name;
         _dragColumn = dragColumn;
-        UpdateSprite();
-    }
-
-    public void Flip()
-    {
-        _isVisible = !_isVisible;
         UpdateSprite();
     }
 
@@ -56,41 +54,62 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
 
     public void OnBeginDrag(PointerEventData eventData)
     {
+        /*
         if (!_isVisible)
         {
             return;
         }
+        */
+        _isDragged = true;
+
         OnBeginDragEvent?.Invoke();
         OnBeginDragCardEvent?.Invoke();
+
+        if (!_isDragged)
+        {
+            StartDrag();
+        }
     }
 
     public void OnDrag(PointerEventData eventData)
     {
+        /*
         if (!_isVisible)
         {
             return;
         }
+        */
 
         _dragColumn.transform.position = eventData.position;
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
+        /*
         if (!_isVisible)
         {
             return;
         }
+        */
         OnEndDragCardEvent?.Invoke(eventData);
+    }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        OnPointerClickEvent?.Invoke();
     }
 
     public void StartDrag()
     {
+        _isDragged = true;
         OnRemoveCardEvent?.Invoke(this);
         _dragColumn.TryAddCard(this);
     }
 
-    public void EndDrag(PointerEventData eventData)
+    public Column EndDrag(PointerEventData eventData, bool hasMoreThanOneCard)
     {
+        _isDragged = false;
+
         List<RaycastResult> results = new List<RaycastResult>();
         EventSystem.current.RaycastAll(eventData, results);
 
@@ -127,25 +146,25 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
         if (firstColumn != null)
         {
             CardSlot nextFreeSlot = firstColumn.GetNextFreeSlot();
-            if (hitSlots.Contains(nextFreeSlot))
+            if (hitSlots.Contains(nextFreeSlot) && firstColumn != _preDragColumn)
             {
                 if (firstColumn.TryAddCard(this, false))
                 {
                     OnRemoveCardEvent?.Invoke(this);
-                    //_preDragColumn?.TryFlipLast();
+                    _preDragColumn?.TryFlipLast();
                     firstColumn.TryAddCard(this);
-                    return;
+                    return firstColumn;
                 }
             }
         }
         else if (firstSlot != null)
         {
-            if (firstSlot.TryAddCard(this, false))
+            if (firstSlot.TryAddCard(this, false) && !hasMoreThanOneCard)
             {
                 OnRemoveCardEvent?.Invoke(this);
-                //_preDragColumn?.TryFlipLast();
+                _preDragColumn?.TryFlipLast();
                 firstSlot.TryAddCard(this);
-                return;
+                return null;
             }
         }
 
@@ -155,7 +174,7 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
             {
                 OnRemoveCardEvent?.Invoke(this);
                 _preDragColumn.TryAddCard(this);
-                return;
+                return _preDragColumn;
             }
         }
         else
@@ -164,8 +183,8 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
             {
                 OnRemoveCardEvent?.Invoke(this);
                 _preDragSlot.TryAddCard(this);
-                return;
             }
         }
+        return null;
     }
 }
