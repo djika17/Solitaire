@@ -12,8 +12,6 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
 
     private bool _isVisible;
 
-    private bool _isDragged;
-
     private Column _preDragColumn;
     private CardSlot _preDragSlot;
 
@@ -54,43 +52,31 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        /*
         if (!_isVisible)
         {
             return;
         }
-        */
-        _isDragged = true;
 
         OnBeginDragEvent?.Invoke();
         OnBeginDragCardEvent?.Invoke();
-
-        if (!_isDragged)
-        {
-            StartDrag();
-        }
     }
 
     public void OnDrag(PointerEventData eventData)
     {
-        /*
         if (!_isVisible)
         {
             return;
         }
-        */
 
         _dragColumn.transform.position = eventData.position;
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        /*
         if (!_isVisible)
         {
             return;
         }
-        */
         OnEndDragCardEvent?.Invoke(eventData);
     }
 
@@ -101,15 +87,12 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
 
     public void StartDrag()
     {
-        _isDragged = true;
         OnRemoveCardEvent?.Invoke(this);
         _dragColumn.TryAddCard(this);
     }
 
     public Column EndDrag(PointerEventData eventData, bool hasMoreThanOneCard)
     {
-        _isDragged = false;
-
         List<RaycastResult> results = new List<RaycastResult>();
         EventSystem.current.RaycastAll(eventData, results);
 

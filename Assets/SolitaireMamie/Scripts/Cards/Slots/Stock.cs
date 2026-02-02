@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
-public class Stock : CardSlot
+public class Stock : CardSlot, IPointerClickHandler
 {
-    private bool _isShuffleOver;
+    private bool _canAddCards;
+
+    public Action OnClickOnStockEvent;
 
     public Stack<Card> Init(List<CardDatas> cardDatas, Card cardPrefab, Column dragColumn)
     {
@@ -13,8 +16,16 @@ public class Stock : CardSlot
         return _cards;
     }
 
+    public void OnEndWasteAdd()
+    {
+        _canAddCards = false;
+        //Shuffle();
+        OnCardPointerClickEvent?.Invoke();
+    }
+
     private void InstantiateCards(List<CardDatas> cardDatas, Card cardPrefab, Column dragColumn)
     {
+        _canAddCards = true;
         foreach (CardDatas cardData in cardDatas)
         {
             Card card = Instantiate(cardPrefab);
@@ -24,6 +35,7 @@ public class Stock : CardSlot
                 card.Flip(false);
             }
         }
+        _canAddCards = false;
     }
 
     private void Shuffle()
@@ -42,12 +54,16 @@ public class Stock : CardSlot
         {
             _cards.Push(card);
         }
-        _isShuffleOver = true;
     }
 
     protected override bool CanAddCard(Card card)
     {
-        return (!_isFull && !_isShuffleOver);
+        return (_canAddCards && !_isFull);
     }
 
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        _canAddCards = true;
+        OnClickOnStockEvent?.Invoke();
+    }
 }

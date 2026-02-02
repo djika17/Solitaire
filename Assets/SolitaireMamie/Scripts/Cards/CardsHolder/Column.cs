@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 public class Column : MonoBehaviour
 {
     [SerializeField] private bool _isBoardColumn;
-    [SerializeField, Range(1, 20)] private int _startCardCount;
+    [SerializeField, Range(1, 7)] private int _startCardCount;
     [SerializeField] private List<BoardSlot> _boardSlots = new();
 
     private int _cardsCount;
@@ -141,9 +141,9 @@ public class Column : MonoBehaviour
         _cardsCount--;
     }
 
-    private void OnBeginDragCardInSlot(CardSlot slot)
+    private void OnBeginDragCardInSlot(BoardSlot slot)
     {
-        int currentIndex = _boardSlots.IndexOf(slot as BoardSlot);
+        int currentIndex = _boardSlots.IndexOf(slot);
         while (currentIndex < _boardSlots.Count && _boardSlots[currentIndex].IsFull)
         {
             _boardSlots[currentIndex].StartDragCard();
@@ -160,7 +160,7 @@ public class Column : MonoBehaviour
             {
                 if(_boardSlots[i].IsFull)
                 {
-                    Card card = _boardSlots[i].Cards.Peek();
+                    Card card = _boardSlots[i].GetLastCard();
                     card.OnRemoveCardEvent?.Invoke(card);
                     targetCol.TryAddCard(card);
                 }

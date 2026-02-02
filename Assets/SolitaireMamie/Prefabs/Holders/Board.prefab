@@ -2405,7 +2405,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4324821412061714579, guid: c97fcac4165d92b49badc741df4f8e9b, type: 3}
       propertyPath: _startCardCount
-      value: 20
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4462560056847354078, guid: c97fcac4165d92b49badc741df4f8e9b, type: 3}
       propertyPath: m_AnchorMax.y

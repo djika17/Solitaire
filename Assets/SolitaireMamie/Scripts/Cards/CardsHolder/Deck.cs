@@ -5,11 +5,12 @@ using UnityEngine;
 public class Deck : MonoBehaviour
 {
     [SerializeField] private Stock _stock;
-    [SerializeField] private CardSlot _waste;
+    [SerializeField] private Waste _waste;
 
     private void Start()
     {
-        _stock.OnSlotPointerClickEvent += OnStockPointerClick;
+        _stock.OnCardPointerClickEvent += OnStockCardPointerClick;
+        _stock.OnClickOnStockEvent += OnClickOnStock;
     }
 
     public Stack<Card> Init(List<CardDatas> cardDatas, Card cardPrefab, Column dragColumn)
@@ -17,16 +18,31 @@ public class Deck : MonoBehaviour
         return _stock.Init(cardDatas, cardPrefab, dragColumn);
     }
 
-    private void OnStockPointerClick()
+    private void OnStockCardPointerClick()
     {
-        Card card = _stock.Cards.Peek();
+        Card card = _stock.GetLastCard();
         card.OnRemoveCardEvent?.Invoke(card);
         _waste.TryAddCard(card);
         card.Flip(true);
     }
 
+    private void OnClickOnStock()
+    {
+        while (!_waste.IsEmpty)
+        {
+            Card card = _waste.GetLastCard();
+            card.OnRemoveCardEvent?.Invoke(card);
+            if (_stock.TryAddCard(card))
+            {
+                card.Flip(false);
+            }
+        }
+        _stock.OnEndWasteAdd();
+    }
+
     private void OnDisable()
     {
-        _stock.OnSlotPointerClickEvent -= OnStockPointerClick;
+        _stock.OnCardPointerClickEvent -= OnStockCardPointerClick;
+        _stock.OnClickOnStockEvent -= OnClickOnStock;
     }
 }

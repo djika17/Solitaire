@@ -8,23 +8,17 @@ using UnityEngine.UI;
 public abstract class CardSlot : MonoBehaviour
 {
     [SerializeField] private int _maxCardsInSlot;
-    [SerializeField] private Image _image;
+    [SerializeField] protected Image _image;
 
     protected Stack<Card> _cards = new();
     protected bool _isFull = false;
 
-    public Stack<Card> Cards => _cards;
     public bool IsFull => _isFull;
+    public bool IsEmpty => _cards.Count == 0;
 
-    public Action<CardSlot> OnCardInSlotBeginDragEvent;
+    public Action<BoardSlot> OnCardInSlotBeginDragEvent;
     public Action<CardSlot, PointerEventData> OnCardInSlotEndDragEvent;
-    public Action OnSlotPointerClickEvent;
-
-    private void Start()
-    {
-        Card.OnBeginDragEvent += OnBeginDrag;
-        Card.OnEndDragEvent += OnEndDrag;
-    }
+    public Action OnCardPointerClickEvent;
 
     protected abstract bool CanAddCard(Card card);
 
@@ -63,7 +57,7 @@ public abstract class CardSlot : MonoBehaviour
         card.OnRemoveCardEvent += OnRemoveCard;
         card.OnBeginDragCardEvent += OnCardBeginDrag;
         card.OnEndDragCardEvent += OnCardEndDrag;
-        card.OnPointerClickEvent += OnPointerClick;
+        card.OnPointerClickEvent += OnCardPointerClick;
 
         if (_cards.Count == _maxCardsInSlot)
         {
@@ -87,15 +81,11 @@ public abstract class CardSlot : MonoBehaviour
         cardToRemove.OnRemoveCardEvent -= OnRemoveCard;
         cardToRemove.OnBeginDragCardEvent -= OnCardBeginDrag;
         cardToRemove.OnEndDragCardEvent -= OnCardEndDrag;
-        cardToRemove.OnPointerClickEvent -= OnPointerClick;
+        cardToRemove.OnPointerClickEvent -= OnCardPointerClick;
     }
 
     public Card GetLastCard()
     {
-        if(_cards.Count == 0)
-        {
-            Debug.Log("stack empty sur slot" + transform.parent.name + " " + gameObject.name);
-        }
         return _cards.Peek();
     }
 
@@ -107,33 +97,17 @@ public abstract class CardSlot : MonoBehaviour
         }
     }
 
-    private void OnBeginDrag()
-    {
-        if(_image != null)
-        {
-            _image.raycastTarget = true;
-        }
-    }
-
-    private void OnEndDrag()
-    {
-        if (_image != null)
-        {
-            _image.raycastTarget = false;
-        }
-    }
-
     private void OnCardBeginDrag()
     {
-        if(this as BoardSlot)
+        BoardSlot boardSlot = this as BoardSlot;
+        if(boardSlot)
         {
-            OnCardInSlotBeginDragEvent?.Invoke(this);
+            OnCardInSlotBeginDragEvent?.Invoke(boardSlot);
         }
         else
         {
             StartDragCard();
         }
-        
     }
 
     private void OnCardEndDrag(PointerEventData eventData)
@@ -141,9 +115,9 @@ public abstract class CardSlot : MonoBehaviour
         OnCardInSlotEndDragEvent?.Invoke(this, eventData);
     }
 
-    private void OnPointerClick()
+    private void OnCardPointerClick()
     {
-        OnSlotPointerClickEvent?.Invoke();
+        OnCardPointerClickEvent?.Invoke();
     }
 
 }
