@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,6 +10,12 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        StartCoroutine(InitCoroutine());
+    }
+
+    private IEnumerator InitCoroutine()
+    {
+        yield return null;
         _cardsManager.Init();
     }
 }

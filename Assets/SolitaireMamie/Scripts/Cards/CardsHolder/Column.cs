@@ -1,6 +1,8 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using static UnityEngine.Rendering.GPUSort;
 
 public class Column : MonoBehaviour
 {
@@ -30,21 +32,7 @@ public class Column : MonoBehaviour
 
     public void FillColumn(Stack<Card> cards)
     {
-        Card cardToAdd = null;
-        while (!IsFull() && cards.Count != 0)
-        {
-            cardToAdd = cards.Peek();
-            if(TryAddCard(cardToAdd, false))
-            {
-                cardToAdd.OnRemoveCardEvent?.Invoke(cardToAdd);
-                TryAddCard(cardToAdd);
-            }
-        }
-
-        if (cardToAdd != null)
-        {
-            cardToAdd.Flip(true);
-        }
+        StartCoroutine(FillColumnCoroutine(cards));
     }
 
     public CardSlot GetNextFreeSlot()
@@ -60,7 +48,7 @@ public class Column : MonoBehaviour
         }
     }
     
-    public bool TryAddCard(Card card, bool addCard = true)
+    public bool TryAddCard(Card card, bool addCard = true, bool shouldPlayAnim = false)
     {
         if (_cardsCount > _boardSlots.Count)
         {
@@ -69,25 +57,25 @@ public class Column : MonoBehaviour
 
         if (!card.IsVisible)
         {
-            return TryAddCardToSlot(card, addCard);
+            return TryAddCardToSlot(card, addCard, shouldPlayAnim);
         }
 
         CardDatas cardDatas = card.Datas;
 
         if(card.PreDragColumn == this)
         {
-            return TryAddCardToSlot(card, addCard);
+            return TryAddCardToSlot(card, addCard, shouldPlayAnim);
         }
 
         if (_cardsCount == 0)
         {
             if (!_isBoardColumn)
             {
-                return TryAddCardToSlot(card, addCard);
+                return TryAddCardToSlot(card, addCard, shouldPlayAnim);
             }
             else if (cardDatas.Value == 13)
             {
-                return TryAddCardToSlot(card, addCard);
+                return TryAddCardToSlot(card, addCard, shouldPlayAnim);
             }
 
             return false;
@@ -106,17 +94,17 @@ public class Column : MonoBehaviour
 
             if (cardDatas.Value == targetValue && cardDatas.Color == targetColor) 
             {
-                return TryAddCardToSlot(card, addCard);
+                return TryAddCardToSlot(card, addCard, shouldPlayAnim);
             }
         }
 
         return false;
     }
 
-    private bool TryAddCardToSlot(Card card, bool addCard = true)
+    private bool TryAddCardToSlot(Card card, bool addCard = true, bool shouldPlayAnim = false)
     {
         CardSlot nextSlot = GetNextFreeSlot();
-        if (nextSlot.TryAddCard(card, addCard, _isBoardColumn))
+        if (nextSlot.TryAddCard(card, addCard, _isBoardColumn, shouldPlayAnim))
         {
             if (addCard)
             {
@@ -134,6 +122,26 @@ public class Column : MonoBehaviour
     private bool IsFull()
     {
         return _cardsCount >= _startCardCount;
+    }
+
+    private IEnumerator FillColumnCoroutine(Stack<Card> cards)
+    {
+        Card cardToAdd = null;
+        while (!IsFull() && cards.Count != 0)
+        {
+            cardToAdd = cards.Peek();
+            if (TryAddCard(cardToAdd, false))
+            {
+                cardToAdd.OnRemoveCardEvent?.Invoke(cardToAdd);
+                TryAddCard(cardToAdd, shouldPlayAnim: true);
+            }
+            yield return new WaitForSeconds(.1f);
+        }
+
+        if (cardToAdd != null)
+        {
+            cardToAdd.Flip(true);
+        }
     }
 
     private void OnEmptyBoardSlot()

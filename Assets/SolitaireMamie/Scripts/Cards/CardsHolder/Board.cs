@@ -1,6 +1,8 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.Rendering.GPUSort;
 
 public class Board : MonoBehaviour
 {
@@ -13,9 +15,15 @@ public class Board : MonoBehaviour
 
     private void DealCards(Stack<Card> cards)
     {
-        foreach (Column col in _columns)
+        StartCoroutine(DealCardsCoroutine(cards));
+    }
+
+    private IEnumerator DealCardsCoroutine(Stack<Card> cards)
+    {
+        for (int i = 0; i<_columns.Count; i ++)
         {
-            col.FillColumn(cards);
+            _columns[i].FillColumn(cards);
+            yield return new WaitForSeconds(.05f);
         }
     }
 }

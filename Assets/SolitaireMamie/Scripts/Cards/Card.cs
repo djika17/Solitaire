@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -41,8 +42,13 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
 
     public void Flip(bool target)
     {
-        _isVisible = target;
-        UpdateSprite();
+
+        transform.DORotate(new Vector3(0, -90f, 0), Utilitaries.FlipCardDuration / 2).SetEase(Ease.InQuad).
+            OnComplete(() =>{
+                _isVisible = target;
+                UpdateSprite();
+                transform.DORotate(Vector3.zero, Utilitaries.FlipCardDuration / 2).SetEase(Ease.OutQuad);
+            });
     }
 
     private void UpdateSprite()

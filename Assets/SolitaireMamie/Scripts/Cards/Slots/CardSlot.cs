@@ -1,4 +1,6 @@
+using DG.Tweening;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -22,7 +24,7 @@ public abstract class CardSlot : MonoBehaviour
 
     protected abstract bool CanAddCard(Card card);
 
-    public bool TryAddCard(Card card, bool addCard = true, bool addPreDragSlot = true)
+    public bool TryAddCard(Card card, bool addCard = true, bool addPreDragSlot = true, bool shouldPlayAnim = false)
     {
         if (!CanAddCard(card))
         {
@@ -31,7 +33,16 @@ public abstract class CardSlot : MonoBehaviour
 
         if (addCard)
         {
-            AddCard(card, addPreDragSlot);
+            if (shouldPlayAnim)
+            {
+                float distance = Vector3.Distance(transform.position, card.transform.position);
+                float duration = distance / Utilitaries.CardMoveSpeed;
+                card.transform.DOMove(transform.position, duration).SetEase(Ease.OutSine).OnComplete(() => { AddCard(card, addPreDragSlot); });
+            }
+            else
+            {
+                AddCard(card, addPreDragSlot);
+            }
         }
 
         return true;
