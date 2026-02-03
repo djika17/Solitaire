@@ -25,9 +25,13 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
     public CardSlot PreDragSlot { set => _preDragSlot = value; }
 
     public Action<Card> OnRemoveCardEvent;
+
     public Action OnBeginDragCardEvent;
     public Action<PointerEventData> OnEndDragCardEvent;
+
     public Action OnPointerClickEvent;
+
+    public Action OnKingAddedOnSlotEvent;
 
     public static Action OnBeginDragEvent;
     public static Action OnEndDragEvent;
@@ -153,6 +157,10 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
                 OnRemoveCardEvent?.Invoke(this);
                 _preDragColumn?.TryFlipLast();
                 firstSlot.TryAddCard(this);
+                if (_datas.Value == 13)
+                {
+                    OnKingAddedOnSlotEvent?.Invoke();
+                }
                 return null;
             }
         }

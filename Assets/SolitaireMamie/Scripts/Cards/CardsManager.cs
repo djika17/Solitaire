@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -13,9 +14,22 @@ public class CardsManager : MonoBehaviour
     [SerializeField] private Deck _deck;
     [SerializeField] private Board _board;
 
+    public Action OnGameEndedEvent;
+
     public void Init()
     {
+        _foundations.OnGameEndedEvent += OnGameEnded;
         Stack<Card> shuffledCards = _deck.Init(_cardDatas, _cardPrefab, _dragColumn);
         _board.Init(shuffledCards);
+    }
+
+    private void OnGameEnded()
+    {
+        OnGameEndedEvent?.Invoke();
+    }
+
+    private void OnDisable()
+    {
+        _foundations.OnGameEndedEvent -= OnGameEnded;
     }
 }

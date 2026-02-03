@@ -22,6 +22,8 @@ public abstract class CardSlot : MonoBehaviour
     public Action<CardSlot, PointerEventData> OnCardInSlotEndDragEvent;
     public Action OnCardPointerClickEvent;
 
+    public Action OnFoundationSlotFullEvent;
+
     protected abstract bool CanAddCard(Card card);
 
     public bool TryAddCard(Card card, bool addCard = true, bool addPreDragSlot = true, bool shouldPlayAnim = false)
@@ -69,6 +71,7 @@ public abstract class CardSlot : MonoBehaviour
         card.OnBeginDragCardEvent += OnCardBeginDrag;
         card.OnEndDragCardEvent += OnCardEndDrag;
         card.OnPointerClickEvent += OnCardPointerClick;
+        card.OnKingAddedOnSlotEvent += OnKingAdded;
 
         if (_cards.Count == _maxCardsInSlot)
         {
@@ -93,6 +96,7 @@ public abstract class CardSlot : MonoBehaviour
         cardToRemove.OnBeginDragCardEvent -= OnCardBeginDrag;
         cardToRemove.OnEndDragCardEvent -= OnCardEndDrag;
         cardToRemove.OnPointerClickEvent -= OnCardPointerClick;
+        cardToRemove.OnKingAddedOnSlotEvent -= OnKingAdded;
     }
 
     public Card GetLastCard()
@@ -124,6 +128,15 @@ public abstract class CardSlot : MonoBehaviour
     private void OnCardEndDrag(PointerEventData eventData)
     {
         OnCardInSlotEndDragEvent?.Invoke(this, eventData);
+    }
+
+    private void OnKingAdded()
+    {
+        FoundationSlot foundationSlot = this as FoundationSlot;
+        if (foundationSlot)
+        {
+            OnFoundationSlotFullEvent?.Invoke();
+        }
     }
 
     private void OnCardPointerClick()

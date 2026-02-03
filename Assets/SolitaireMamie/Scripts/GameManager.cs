@@ -10,6 +10,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        _cardsManager.OnGameEndedEvent += OnGameEnded;
         StartCoroutine(InitCoroutine());
     }
 
@@ -17,5 +18,15 @@ public class GameManager : MonoBehaviour
     {
         yield return null;
         _cardsManager.Init();
+    }
+
+    private void OnGameEnded()
+    {
+        Debug.Log("GameEnded");
+    }
+
+    private void OnDisable()
+    {
+        _cardsManager.OnGameEndedEvent -= OnGameEnded;
     }
 }
