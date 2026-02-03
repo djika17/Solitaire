@@ -8,9 +8,13 @@ public class GameManager : MonoBehaviour
     [Header("Cards")]
     [SerializeField] private CardsManager _cardsManager;
 
+    [Header("Texts")]
+    [SerializeField] private TextsManager _textsManager;
+
     private void Start()
     {
         _cardsManager.OnGameEndedEvent += OnGameEnded;
+        _cardsManager.OnPlayedCoupEvent += OnPlayedCoup;
         StartCoroutine(InitCoroutine());
     }
 
@@ -18,6 +22,7 @@ public class GameManager : MonoBehaviour
     {
         yield return null;
         _cardsManager.Init();
+        _textsManager.Init();
     }
 
     private void OnGameEnded()
@@ -25,8 +30,14 @@ public class GameManager : MonoBehaviour
         Debug.Log("GameEnded");
     }
 
+    private void OnPlayedCoup()
+    {
+        _textsManager.UpdateCoupVisual();
+    }
+
     private void OnDisable()
     {
         _cardsManager.OnGameEndedEvent -= OnGameEnded;
+        _cardsManager.OnPlayedCoupEvent += OnPlayedCoup;
     }
 }

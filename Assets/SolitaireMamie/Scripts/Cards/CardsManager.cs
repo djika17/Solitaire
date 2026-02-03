@@ -15,10 +15,14 @@ public class CardsManager : MonoBehaviour
     [SerializeField] private Board _board;
 
     public Action OnGameEndedEvent;
+    public Action OnPlayedCoupEvent;
 
     public void Init()
     {
         _foundations.OnGameEndedEvent += OnGameEnded;
+        _foundations.OnPlayedCoupEvent += OnPlayedCoup;
+        _board.OnPlayedCoupEvent += OnPlayedCoup;
+        _deck.OnCoupPlayedEvent += OnPlayedCoup;
         Stack<Card> shuffledCards = _deck.Init(_cardDatas, _cardPrefab, _dragColumn);
         _board.Init(shuffledCards);
     }
@@ -28,8 +32,16 @@ public class CardsManager : MonoBehaviour
         OnGameEndedEvent?.Invoke();
     }
 
+    private void OnPlayedCoup()
+    {
+        OnPlayedCoupEvent?.Invoke();
+    }
+
     private void OnDisable()
     {
         _foundations.OnGameEndedEvent -= OnGameEnded;
+        _foundations.OnPlayedCoupEvent -= OnPlayedCoup;
+        _board.OnPlayedCoupEvent -= OnPlayedCoup;
+        _deck.OnCoupPlayedEvent -= OnPlayedCoup;
     }
 }

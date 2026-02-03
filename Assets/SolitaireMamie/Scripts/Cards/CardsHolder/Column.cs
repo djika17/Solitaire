@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,6 +15,8 @@ public class Column : MonoBehaviour
 
     public bool IsBoardColumn => _isBoardColumn;
 
+    public Action OnPlayedCoupEvent;
+
     private void Start()
     {
         foreach (BoardSlot slot in _boardSlots) 
@@ -22,6 +25,7 @@ public class Column : MonoBehaviour
             if (_isBoardColumn)
             {
                 slot.OnCardInSlotBeginDragEvent += OnBeginDragCardInSlot;
+                slot.OnPlayedCoupEvent += OnPlayedCoup;
             }
             else
             {
@@ -176,6 +180,11 @@ public class Column : MonoBehaviour
         }
     }
 
+    private void OnPlayedCoup()
+    {
+        OnPlayedCoupEvent?.Invoke();
+    }
+    
     private void OnDisable()
     {
         foreach (BoardSlot slot in _boardSlots) 
@@ -184,6 +193,7 @@ public class Column : MonoBehaviour
             if (_isBoardColumn)
             {
                 slot.OnCardInSlotBeginDragEvent -= OnBeginDragCardInSlot;
+                slot.OnPlayedCoupEvent -= OnPlayedCoup;
             }
             else
             {

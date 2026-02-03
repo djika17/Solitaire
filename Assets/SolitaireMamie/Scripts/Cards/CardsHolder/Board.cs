@@ -8,6 +8,16 @@ public class Board : MonoBehaviour
 {
     [SerializeField] private List<Column> _columns = new();
 
+    public Action OnPlayedCoupEvent;
+
+    private void Start()
+    {
+        foreach(Column column in _columns)
+        {
+            column.OnPlayedCoupEvent += OnPlayedCoup;
+        }
+    }
+
     public void Init(Stack<Card> cards)
     {
         DealCards(cards);
@@ -24,6 +34,19 @@ public class Board : MonoBehaviour
         {
             _columns[i].FillColumn(cards);
             yield return new WaitForSeconds(.05f);
+        }
+    }
+
+    private void OnPlayedCoup()
+    {
+        OnPlayedCoupEvent?.Invoke();
+    }
+
+    private void OnDisable()
+    {
+        foreach (Column column in _columns)
+        {
+            column.OnPlayedCoupEvent -= OnPlayedCoup;
         }
     }
 }

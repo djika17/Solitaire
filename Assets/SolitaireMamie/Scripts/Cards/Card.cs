@@ -31,6 +31,8 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
 
     public Action OnPointerClickEvent;
 
+    public Action OnPlayedCoupEvent;
+
     public Action OnKingAddedOnSlotEvent;
 
     public static Action OnBeginDragEvent;
@@ -146,6 +148,7 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
                     OnRemoveCardEvent?.Invoke(this);
                     _preDragColumn?.TryFlipLast();
                     firstColumn.TryAddCard(this);
+                    OnPlayedCoupEvent?.Invoke();
                     return firstColumn;
                 }
             }
@@ -157,6 +160,7 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
                 OnRemoveCardEvent?.Invoke(this);
                 _preDragColumn?.TryFlipLast();
                 firstSlot.TryAddCard(this);
+                OnPlayedCoupEvent?.Invoke();
                 if (_datas.Value == 13)
                 {
                     OnKingAddedOnSlotEvent?.Invoke();

@@ -10,6 +10,8 @@ public class Deck : MonoBehaviour
 
     private float _stockWasteMoveDuration;
 
+    public Action OnCoupPlayedEvent;
+
     private void Start()
     {
         _stock.OnCardPointerClickEvent += OnStockCardPointerClick;
@@ -28,6 +30,7 @@ public class Deck : MonoBehaviour
         Card card = _stock.GetLastCard();
         card.OnRemoveCardEvent?.Invoke(card);
         _waste.TryAddCard(card, shouldPlayAnim:true);
+        OnCoupPlayedEvent?.Invoke();
         card.Flip(true);
     }
 
